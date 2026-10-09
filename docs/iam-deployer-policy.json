@@ -19,7 +19,10 @@
     {
       "Sid": "CloudFormationTemplate",
       "Effect": "Allow",
-      "Action": ["cloudformation:ValidateTemplate", "cloudformation:GetTemplateSummary"],
+      "Action": [
+        "cloudformation:ValidateTemplate",
+        "cloudformation:GetTemplateSummary"
+      ],
       "Resource": "*"
     },
     {
@@ -58,7 +61,10 @@
     {
       "Sid": "LambdaRoleManagedPolicyOnlyBasicLogs",
       "Effect": "Allow",
-      "Action": ["iam:AttachRolePolicy", "iam:DetachRolePolicy"],
+      "Action": [
+        "iam:AttachRolePolicy",
+        "iam:DetachRolePolicy"
+      ],
       "Resource": "arn:aws:iam::082492029366:role/isthislegit-*",
       "Condition": {
         "ArnEquals": {
@@ -71,7 +77,11 @@
       "Effect": "Allow",
       "Action": "iam:PassRole",
       "Resource": "arn:aws:iam::082492029366:role/isthislegit-*",
-      "Condition": { "StringEquals": { "iam:PassedToService": "lambda.amazonaws.com" } }
+      "Condition": {
+        "StringEquals": {
+          "iam:PassedToService": "lambda.amazonaws.com"
+        }
+      }
     },
     {
       "Sid": "LambdaFunction",
@@ -98,8 +108,7 @@
         "apigateway:POST",
         "apigateway:PUT",
         "apigateway:PATCH",
-        "apigateway:DELETE",
-        "apigateway:TagResource"
+        "apigateway:DELETE"
       ],
       "Resource": [
         "arn:aws:apigateway:us-east-1::/apis",
