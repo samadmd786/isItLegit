@@ -60,7 +60,6 @@ So the first thing on screen is the verdict, in his language, in letters you can
 - **Speed.** Median **0.7 seconds** per check, so it feels instant.
 - **The AI stayed in its lane.** 28 out of 28 live answers passed validation, including the prompt-injection attempt.
 - **Accuracy on messages it hadn't seen.** I froze the rules and then wrote 32 new messages, 20 scams and 12 real ones, in two rounds. On first run it flagged **16 of 20 scams** and told nobody to avoid a real message. One store "last chance" sale got a BE CAREFUL. The four misses were all link-free scams: the "I sent you money by mistake" Venmo trick, a fake job offer, a "wrong number" opener, and a fake bank fraud-department text. I added rules for each, and they're now regression tests. But 16/20 is the honest number.
-- **Real people.** [FILL: what happened when you showed it to your mom/dad. One or two sentences, their words if possible.]
 
 ![A "Netflix" text whose bit.ly link really goes somewhere else](docs/screenshots/04-short-link-revealed.jpg)
 

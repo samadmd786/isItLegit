@@ -51,8 +51,7 @@ like admin keys, and delete the access key after the challenge.
 
 - [x] `ARTICLE.md`: Amplify URL (2 places)
 - [x] `ARTICLE.md`: GitHub URL (2 places)
-- [ ] `ARTICLE.md`: your parent's reaction under "Real people". Show it to
-      them, hand them a real scam text, write down what they said.
+- [x] Parent quote: removed (decided Oct 9)
 - [x] `README.md`: live demo link
 
 ## 4. Builder profile (required or the entry is invalid)
