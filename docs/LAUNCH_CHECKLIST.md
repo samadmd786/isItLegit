@@ -21,7 +21,7 @@ git remote add origin git@github.com:samadmd786/isItLegit.git
 git push -u origin main
 ```
 
-## 2. AWS deploy (about 10 min)
+## 2. AWS deploy ✅ done: https://main.dp6j97gnjo03s.amplifyapp.com
 
 1. In the IAM console (account 082492029366): Users → Create user →
    `isthislegit-deployer`, no console access. Choose **Attach policies
@@ -49,11 +49,11 @@ like admin keys, and delete the access key after the challenge.
 
 ## 3. Fill the placeholders
 
-- [ ] `ARTICLE.md`: Amplify URL (2 places)
+- [x] `ARTICLE.md`: Amplify URL (2 places)
 - [x] `ARTICLE.md`: GitHub URL (2 places)
 - [ ] `ARTICLE.md`: your parent's reaction under "Real people". Show it to
       them, hand them a real scam text, write down what they said.
-- [ ] `README.md`: live demo link
+- [x] `README.md`: live demo link
 
 ## 4. Builder profile (required or the entry is invalid)
 
