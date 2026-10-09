@@ -1,0 +1,147 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "CloudFormationStack",
+      "Effect": "Allow",
+      "Action": [
+        "cloudformation:CreateChangeSet",
+        "cloudformation:DescribeChangeSet",
+        "cloudformation:ExecuteChangeSet",
+        "cloudformation:DeleteChangeSet",
+        "cloudformation:DescribeStacks",
+        "cloudformation:DescribeStackEvents",
+        "cloudformation:GetTemplateSummary",
+        "cloudformation:DeleteStack"
+      ],
+      "Resource": "arn:aws:cloudformation:us-east-1:082492029366:stack/isthislegit/*"
+    },
+    {
+      "Sid": "CloudFormationTemplate",
+      "Effect": "Allow",
+      "Action": ["cloudformation:ValidateTemplate", "cloudformation:GetTemplateSummary"],
+      "Resource": "*"
+    },
+    {
+      "Sid": "DeployBucket",
+      "Effect": "Allow",
+      "Action": [
+        "s3:CreateBucket",
+        "s3:DeleteBucket",
+        "s3:ListBucket",
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:DeleteObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::isthislegit-deploy-*",
+        "arn:aws:s3:::isthislegit-deploy-*/*"
+      ]
+    },
+    {
+      "Sid": "LambdaRole",
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreateRole",
+        "iam:DeleteRole",
+        "iam:GetRole",
+        "iam:TagRole",
+        "iam:UntagRole",
+        "iam:PutRolePolicy",
+        "iam:GetRolePolicy",
+        "iam:DeleteRolePolicy",
+        "iam:ListRolePolicies",
+        "iam:ListAttachedRolePolicies"
+      ],
+      "Resource": "arn:aws:iam::082492029366:role/isthislegit-*"
+    },
+    {
+      "Sid": "LambdaRoleManagedPolicyOnlyBasicLogs",
+      "Effect": "Allow",
+      "Action": ["iam:AttachRolePolicy", "iam:DetachRolePolicy"],
+      "Resource": "arn:aws:iam::082492029366:role/isthislegit-*",
+      "Condition": {
+        "ArnEquals": {
+          "iam:PolicyARN": "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+        }
+      }
+    },
+    {
+      "Sid": "PassRoleToLambdaOnly",
+      "Effect": "Allow",
+      "Action": "iam:PassRole",
+      "Resource": "arn:aws:iam::082492029366:role/isthislegit-*",
+      "Condition": { "StringEquals": { "iam:PassedToService": "lambda.amazonaws.com" } }
+    },
+    {
+      "Sid": "LambdaFunction",
+      "Effect": "Allow",
+      "Action": [
+        "lambda:CreateFunction",
+        "lambda:DeleteFunction",
+        "lambda:GetFunction",
+        "lambda:GetFunctionConfiguration",
+        "lambda:UpdateFunctionCode",
+        "lambda:UpdateFunctionConfiguration",
+        "lambda:AddPermission",
+        "lambda:RemovePermission",
+        "lambda:TagResource",
+        "lambda:ListTags"
+      ],
+      "Resource": "arn:aws:lambda:us-east-1:082492029366:function:isthislegit"
+    },
+    {
+      "Sid": "HttpApi",
+      "Effect": "Allow",
+      "Action": [
+        "apigateway:GET",
+        "apigateway:POST",
+        "apigateway:PUT",
+        "apigateway:PATCH",
+        "apigateway:DELETE",
+        "apigateway:TagResource"
+      ],
+      "Resource": [
+        "arn:aws:apigateway:us-east-1::/apis",
+        "arn:aws:apigateway:us-east-1::/apis/*",
+        "arn:aws:apigateway:us-east-1::/tags/*"
+      ]
+    },
+    {
+      "Sid": "LogGroup",
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:DeleteLogGroup",
+        "logs:PutRetentionPolicy",
+        "logs:DeleteRetentionPolicy",
+        "logs:TagResource",
+        "logs:TagLogGroup",
+        "logs:ListTagsForResource"
+      ],
+      "Resource": "arn:aws:logs:us-east-1:082492029366:log-group:/aws/lambda/isthislegit*"
+    },
+    {
+      "Sid": "LogGroupDescribe",
+      "Effect": "Allow",
+      "Action": "logs:DescribeLogGroups",
+      "Resource": "*"
+    },
+    {
+      "Sid": "AmplifyHosting",
+      "Effect": "Allow",
+      "Action": [
+        "amplify:ListApps",
+        "amplify:CreateApp",
+        "amplify:GetApp",
+        "amplify:DeleteApp",
+        "amplify:CreateBranch",
+        "amplify:GetBranch",
+        "amplify:CreateDeployment",
+        "amplify:StartDeployment",
+        "amplify:GetJob"
+      ],
+      "Resource": "arn:aws:amplify:us-east-1:082492029366:*"
+    }
+  ]
+}

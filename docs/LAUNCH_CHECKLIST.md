@@ -21,20 +21,31 @@ git remote add origin git@github.com:samadmd786/isthislegit.git
 git push -u origin main
 ```
 
-## 2. AWS deploy (about 5 min)
+## 2. AWS deploy (about 10 min)
 
-1. Refresh the credentials on your deployer profile (`default` was invalid on
-   Oct 9). Check with `aws sts get-caller-identity --profile default`.
-2. Make sure Bedrock model access for **Amazon Nova Micro** is enabled in
-   us-east-1 for that account.
+1. In the IAM console (account 082492029366): Users → Create user →
+   `isthislegit-deployer`, no console access. Choose **Attach policies
+   directly → Create policy → JSON**, paste `docs/iam-deployer-policy.json`,
+   name it `isthislegit-deploy`, and attach it.
+2. Open the user → Security credentials → Create access key → "Command Line
+   Interface". Then:
+
+   ```bash
+   aws configure --profile isthislegit-deployer    # region us-east-1, output json
+   ```
+
 3. Deploy:
 
    ```bash
-   scripts/deploy.sh --profile default
+   scripts/deploy.sh --profile isthislegit-deployer
    ```
 
 4. Open the printed App URL in a private window. Try the four sample buttons,
    switch the language, and tap Read it to me.
+
+Note: any user that can create a role and pass it to Lambda can, in
+principle, give that Lambda more power than it has itself. Treat these keys
+like admin keys, and delete the access key after the challenge.
 
 ## 3. Fill the placeholders
 
@@ -61,5 +72,5 @@ git push -u origin main
 ## After the challenge
 
 ```bash
-scripts/destroy.sh --profile default    # removes Lambda, API, Amplify app, bucket
+scripts/destroy.sh --profile isthislegit-deployer    # removes Lambda, API, Amplify app, bucket
 ```
