@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+dist/
+.DS_Store
+.env
+*.pem
+credentials*.json
+.claude/

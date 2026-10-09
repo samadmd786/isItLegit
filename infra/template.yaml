@@ -1,0 +1,107 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  Is This Legit? backend. API Gateway HTTP API -> Lambda (deterministic
+  phishing checks + one Amazon Bedrock Nova Micro call). The static frontend
+  is deployed to Amplify by scripts/deploy.sh.
+
+Parameters:
+  LambdaS3Bucket:
+    Type: String
+  LambdaS3Key:
+    Type: String
+  ModelId:
+    Type: String
+    Default: us.amazon.nova-micro-v1:0
+
+Resources:
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: { Service: lambda.amazonaws.com }
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: InvokeNovaMicro
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: bedrock:InvokeModel
+                Resource:
+                  - !Sub "arn:aws:bedrock:*:${AWS::AccountId}:inference-profile/us.amazon.nova-micro-v1:0"
+                  - "arn:aws:bedrock:*::foundation-model/amazon.nova-micro-v1:0"
+
+  CheckFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: isthislegit
+      Runtime: python3.12
+      Handler: backend.handler.lambda_handler
+      Role: !GetAtt LambdaRole.Arn
+      MemorySize: 256
+      Timeout: 15
+      Code:
+        S3Bucket: !Ref LambdaS3Bucket
+        S3Key: !Ref LambdaS3Key
+      Environment:
+        Variables:
+          ITL_MODEL_ID: !Ref ModelId
+
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /aws/lambda/isthislegit
+      RetentionInDays: 7
+
+  HttpApi:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name: isthislegit-api
+      ProtocolType: HTTP
+      CorsConfiguration:
+        AllowHeaders: [content-type]
+        AllowMethods: [POST, OPTIONS]
+        AllowOrigins: ["*"]
+
+  Integration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref HttpApi
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !GetAtt CheckFunction.Arn
+      PayloadFormatVersion: "2.0"
+
+  Route:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref HttpApi
+      RouteKey: "POST /"
+      Target: !Sub "integrations/${Integration}"
+
+  Stage:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      ApiId: !Ref HttpApi
+      StageName: "$default"
+      AutoDeploy: true
+      # A public demo with a pay-per-call model behind it: cap the blast radius.
+      DefaultRouteSettings:
+        ThrottlingRateLimit: 5
+        ThrottlingBurstLimit: 10
+
+  InvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref CheckFunction
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${HttpApi}/*"
+
+Outputs:
+  ApiUrl:
+    Value: !Sub "https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com/"

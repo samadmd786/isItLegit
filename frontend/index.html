@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Is This Legit?</title>
+  <meta name="description" content="Paste a text or email you're not sure about. Find out in plain words if it's a scam.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main>
+    <header>
+      <div class="brand">
+        <span class="logo" aria-hidden="true">🛡️</span>
+        <h1>Is This Legit?</h1>
+      </div>
+      <label class="lang">
+        <span class="sr-only">Language</span>
+        <select id="lang" aria-label="Language">
+          <option value="en">English</option>
+          <option value="es">Español</option>
+          <option value="zh">中文</option>
+          <option value="hi">हिन्दी</option>
+          <option value="vi">Tiếng Việt</option>
+          <option value="ko">한국어</option>
+          <option value="tl">Tagalog</option>
+          <option value="pt">Português</option>
+        </select>
+      </label>
+    </header>
+
+    <p class="intro">Got a text or email you're not sure about? Paste it here. I'll tell you, in plain words, if it's a scam and what to do.</p>
+
+    <form id="form">
+      <label for="message" class="sr-only">The message you got</label>
+      <textarea id="message" rows="7" placeholder="Paste the message here…" autocomplete="off" spellcheck="false"></textarea>
+      <div class="row">
+        <button type="submit" id="go" class="primary">Check it</button>
+        <button type="button" id="clear" class="ghost" hidden>Start over</button>
+      </div>
+      <div class="examples">
+        <span>Or try one:</span>
+        <button type="button" class="chip" data-sample="toll">Toll text 🚗</button>
+        <button type="button" class="chip" data-sample="mom">"Hi Mom" text 📱</button>
+        <button type="button" class="chip" data-sample="paypal">PayPal email 💳</button>
+        <button type="button" class="chip" data-sample="amazon">Real Amazon email 📦</button>
+      </div>
+    </form>
+
+    <section id="result" aria-live="polite" hidden>
+      <div id="verdict" class="verdict">
+        <span id="verdict-icon" class="verdict-icon" aria-hidden="true"></span>
+        <span id="verdict-label"></span>
+      </div>
+      <h2 id="headline"></h2>
+      <p id="why"></p>
+      <div class="todo">
+        <h3 id="todo-h">What to do</h3>
+        <p id="do-this"></p>
+      </div>
+      <div class="actions">
+        <button type="button" id="speak" class="ghost">🔊 Read it to me</button>
+        <button type="button" id="share" class="ghost">💬 Send to family</button>
+      </div>
+      <details id="clues-wrap">
+        <summary id="clues-h">Show me the clues</summary>
+        <ul id="clues"></ul>
+        <p class="fineprint" id="ai-note"></p>
+      </details>
+    </section>
+
+    <p id="error" class="error" role="alert" hidden></p>
+
+    <footer>
+      <p>🔒 I never open the links in your message, and nothing you paste is saved.</p>
+      <p class="fineprint">This is a helper, not a guarantee. When in doubt, call the company using the number on your card or their app.</p>
+    </footer>
+  </main>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
