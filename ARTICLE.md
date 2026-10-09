@@ -6,7 +6,7 @@ Every family has a group chat where someone eventually pastes a screenshot and a
 
 I spent four years building authentication and security systems at a company serving millions of investors. I can explain DMARC alignment and OAuth redirect validation. None of that helped my parents decide whether to tap a link at 9 p.m. So this weekend I built the thing that would have: **Is This Legit?**
 
-**Live demo:** [FILL: Amplify URL] · **Code:** [FILL: GitHub URL]
+**Live demo:** [FILL: Amplify URL] · **Code:** https://github.com/samadmd786/isItLegit
 
 ## What it does, and who it's for
 
@@ -72,6 +72,6 @@ So the first thing on screen is the verdict, in his language, in letters you can
 - **Bengali, Urdu and Arabic.** I tested them and pulled them. Nova Micro called a scam an "empty message" in Bengali and mixed scripts in Urdu. Shipping a confidently wrong answer in someone's own language is worse than not offering it. They need a larger model.
 - **The limit worth saying out loud.** It can't see where a link actually goes. A well-made scam on a convincing domain can look OK. That's why every answer, even LOOKS OK, ends with what to do if the message ever asks for money, a password or a code.
 
-**Try it:** [FILL: Amplify URL] · **Code:** [FILL: GitHub URL]
+**Try it:** [FILL: Amplify URL] · **Code:** https://github.com/samadmd786/isItLegit
 
 #agents

@@ -3,7 +3,7 @@
 Challenge window closes **Sunday Oct 12, 2026, 1:00 PM PT (20:00 UTC)**. The
 first 100 qualifying articles win credits, so earlier is better.
 
-## 1. GitHub (about 2 min)
+## 1. GitHub ✅ done: https://github.com/samadmd786/isItLegit
 
 Either create an empty **public** repo named `isthislegit` at github.com/new
 (no README or license), or fix the CLI:
@@ -11,13 +11,13 @@ Either create an empty **public** repo named `isthislegit` at github.com/new
 ```bash
 unset GITHUB_TOKEN
 gh auth login
-gh repo create samadmd786/isthislegit --public --source . --push
+gh repo create samadmd786/isItLegit --public --source . --push
 ```
 
 If you created it on the website instead:
 
 ```bash
-git remote add origin git@github.com:samadmd786/isthislegit.git
+git remote add origin git@github.com:samadmd786/isItLegit.git
 git push -u origin main
 ```
 
@@ -49,7 +49,8 @@ like admin keys, and delete the access key after the challenge.
 
 ## 3. Fill the placeholders
 
-- [ ] `ARTICLE.md`: Amplify URL (2 places), GitHub URL (2 places)
+- [ ] `ARTICLE.md`: Amplify URL (2 places)
+- [x] `ARTICLE.md`: GitHub URL (2 places)
 - [ ] `ARTICLE.md`: your parent's reaction under "Real people". Show it to
       them, hand them a real scam text, write down what they said.
 - [ ] `README.md`: live demo link

@@ -8,7 +8,7 @@ languages, with a button that reads the answer out loud.
 Built for the AWS Builder Center weekend challenge: *build an agent people
 actually enjoy using* (`#agents`).
 
-**Live demo:** _(added after deploy)_
+**Live demo:** _(added after deploy)_ · **Code:** https://github.com/samadmd786/isItLegit
 
 ![A fake PayPal email gets DON'T CLICK](docs/screenshots/01-paypal-scam.jpg)
 
