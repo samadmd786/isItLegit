@@ -46,7 +46,7 @@ def test_model_links_are_defanged():
     fake = FakeBedrock(ai("Scam.", "It goes to usps-fee.top instead of usps.com.", "Type usps.com yourself."))
     r = check(SCAM, client=fake)
     assert "usps-fee.top" not in r["explanation"]["why"]
-    assert "usps[.]com" in r["explanation"]["do_this"]
+    assert "usps.com" in r["explanation"]["do_this"]  # the real site stays readable
 
 
 def test_message_cannot_break_out_of_tags():

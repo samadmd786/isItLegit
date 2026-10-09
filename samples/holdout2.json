@@ -1,0 +1,19 @@
+[
+  {"id": "h2_dhl_address", "label": "scam", "expect": "dont_click", "text": "DHL Express: we attempted delivery but your address was incomplete. Confirm your address and pay the $1.95 redelivery charge: dhl-express-reship.click/c"},
+  {"id": "h2_geek_squad", "label": "scam", "expect": "dont_click", "text": "Thank you for your Geek Squad renewal. $349.99 will be charged to your card today. To cancel or get a refund, call 1-866-555-0142 within 24 hours."},
+  {"id": "h2_ms365_password", "label": "scam", "expect": "dont_click", "text": "Microsoft 365: Your password expires today. Keep your current password by signing in here: https://m365-passwordkeep.com/login"},
+  {"id": "h2_zelle_fraud_call", "label": "scam", "expect": "dont_click", "text": "Wells Fargo Fraud Dept: Did you attempt a Zelle payment of $1,500 to MARK JOHNSON? Reply YES or NO. If NO, our agent will call you to reverse it."},
+  {"id": "h2_crypto_mentor", "label": "scam", "expect": "dont_click", "text": "My mentor showed me how to double my money with Bitcoin in one week. I can teach you too, you just need to start with $500. Want me to show you?"},
+  {"id": "h2_ezpass_bare", "label": "scam", "expect": "dont_click", "text": "Final reminder: unpaid tolls on your account. Pay now to avoid DMV penalties. ezpass.com-tolls.vip"},
+  {"id": "h2_instagram_copyright", "label": "scam", "expect": "dont_click", "text": "Instagram: Your account will be deleted within 24 hours due to copyright infringement. If you think this is a mistake, appeal here: https://instagram-appeal-center.com"},
+  {"id": "h2_lottery_whatsapp", "label": "scam", "expect": "dont_click", "text": "Congratulations! Your number was selected in the WhatsApp international lottery. You won $850,000. Contact our agent to claim your prize."},
+  {"id": "h2_package_no_link", "label": "scam", "expect": "careful", "text": "USPS: We couldn't deliver your package. Please reply with your full address and date of birth so we can reschedule delivery."},
+  {"id": "h2_aunt_hospital", "label": "scam", "expect": "dont_click", "text": "Hi Auntie it's Ravi, I lost my phone so using my friend's. I'm in the hospital and need you to buy some Apple gift cards for the bill, I'll explain later."},
+
+  {"id": "h2_legit_sale", "label": "legit", "expect": "looks_ok", "text": "Target Circle: Last chance! 20% off home essentials ends tonight. Shop now at https://www.target.com/circle"},
+  {"id": "h2_legit_google_code", "label": "legit", "expect": "looks_ok", "text": "G-482913 is your Google verification code. Don't share this code with anyone."},
+  {"id": "h2_legit_dentist", "label": "legit", "expect": "looks_ok", "text": "Hi Mrs. Rahman, this is Smile Dental. Just a reminder of your cleaning tomorrow at 9:00 AM. Call us at 773-555-0123 if you need to reschedule."},
+  {"id": "h2_legit_son", "label": "legit", "expect": "looks_ok", "text": "Hey Dad, can you send me the photo of the recipe Mom made last weekend? Want to try it tonight"},
+  {"id": "h2_legit_paypal_receipt", "label": "legit", "expect": "looks_ok", "text": "You sent $25.00 USD to Jane Smith. Transaction ID 7HX12345AB678901C. View details at https://www.paypal.com/activity"},
+  {"id": "h2_legit_comcast_outage", "label": "legit", "expect": "looks_ok", "text": "Xfinity: We're aware of an outage in your area and are working to restore service. Estimated fix by 6 PM. No action needed."}
+]

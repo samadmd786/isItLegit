@@ -3,6 +3,7 @@
 
     python3 scripts/scan.py            # scorecard
     python3 scripts/scan.py -v         # plus every finding
+    python3 scripts/scan.py --holdout  # messages written after the rules froze
     echo "some message" | python3 scripts/scan.py -   # check stdin
 """
 
@@ -23,7 +24,8 @@ def main(argv: list[str]) -> int:
         print(json.dumps(analyze_text(sys.stdin.read()), indent=2, ensure_ascii=False))
         return 0
     verbose = "-v" in argv
-    cases = json.loads((ROOT / "samples" / "corpus.json").read_text())
+    name = "holdout2.json" if "--holdout2" in argv else "holdout.json" if "--holdout" in argv else "corpus.json"
+    cases = json.loads((ROOT / "samples" / name).read_text())
     exact = safe_side = 0
     missed_scams: list[str] = []
     false_alarms: list[str] = []

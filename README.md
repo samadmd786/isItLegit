@@ -10,6 +10,8 @@ actually enjoy using* (`#agents`).
 
 **Live demo:** _(added after deploy)_
 
+![A fake PayPal email gets DON'T CLICK](docs/screenshots/01-paypal-scam.jpg)
+
 ## How it works
 
 Rules decide, AI explains.
@@ -50,20 +52,25 @@ Why split it this way:
 
 | What | Result |
 | --- | --- |
-| Labeled corpus (`samples/corpus.json`, 17 scams + 10 real messages) | 27/27 verdicts, 0 scams marked "looks ok", 0 real messages blocked |
+| **Held-out messages** (`samples/holdout*.json`, written after the rules were frozen, 20 scams + 12 real, first run) | 16/20 scams flagged; 0/12 real messages got DON'T CLICK; 1 store promo got BE CAREFUL |
+| Same held-out sets after adding rules for the 4 misses | 20/20 flagged (tuned, so not a fair number; kept as regression tests) |
+| Build corpus (`samples/corpus.json`, 17 scams + 10 real) | 27/27 verdicts. Written while building the rules, so this is a regression suite, not a benchmark |
 | AI answers that passed validation (live, Nova Micro) | 28/28, including a prompt-injection attempt |
-| Reading level of the explanation (Flesch-Kincaid, English) | median grade 3.2, max 5.4 |
+| Reading level of the explanation (Flesch-Kincaid, English) | median grade 3.1, max 5.2 |
 | Latency | median 0.7 s per check |
 
-The corpus was written while building the rules, so treat those numbers as a
-regression suite, not a benchmark.
+The four first-run misses were all link-free scams: an "I sent you money by
+mistake" refund trick, a fake job offer, a "wrong number" opener, and a fake
+bank fraud-department text.
 
 Reproduce:
 
 ```bash
 python3 -m venv .venv && .venv/bin/pip install pytest boto3
-.venv/bin/python -m pytest -q                               # 50 offline tests
-.venv/bin/python scripts/scan.py                            # corpus scorecard
+.venv/bin/python -m pytest -q                               # 83 offline tests
+.venv/bin/python scripts/scan.py                            # build corpus
+.venv/bin/python scripts/scan.py --holdout                  # held-out round 1
+.venv/bin/python scripts/scan.py --holdout2                 # held-out round 2
 AWS_PROFILE=<bedrock-profile> .venv/bin/python scripts/live_check.py   # live Bedrock
 ```
 

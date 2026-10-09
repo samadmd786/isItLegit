@@ -1,0 +1,65 @@
+# Launch checklist
+
+Challenge window closes **Sunday Oct 12, 2026, 1:00 PM PT (20:00 UTC)**. The
+first 100 qualifying articles win credits, so earlier is better.
+
+## 1. GitHub (about 2 min)
+
+Either create an empty **public** repo named `isthislegit` at github.com/new
+(no README or license), or fix the CLI:
+
+```bash
+unset GITHUB_TOKEN
+gh auth login
+gh repo create samadmd786/isthislegit --public --source . --push
+```
+
+If you created it on the website instead:
+
+```bash
+git remote add origin git@github.com:samadmd786/isthislegit.git
+git push -u origin main
+```
+
+## 2. AWS deploy (about 5 min)
+
+1. Refresh the credentials on your deployer profile (`default` was invalid on
+   Oct 9). Check with `aws sts get-caller-identity --profile default`.
+2. Make sure Bedrock model access for **Amazon Nova Micro** is enabled in
+   us-east-1 for that account.
+3. Deploy:
+
+   ```bash
+   scripts/deploy.sh --profile default
+   ```
+
+4. Open the printed App URL in a private window. Try the four sample buttons,
+   switch the language, and tap Read it to me.
+
+## 3. Fill the placeholders
+
+- [ ] `ARTICLE.md`: Amplify URL (2 places), GitHub URL (2 places)
+- [ ] `ARTICLE.md`: your parent's reaction under "Real people". Show it to
+      them, hand them a real scam text, write down what they said.
+- [ ] `README.md`: live demo link
+
+## 4. Builder profile (required or the entry is invalid)
+
+- [ ] Profile image
+- [ ] Country
+- [ ] About section filled in
+
+## 5. Publish on Builder Center
+
+- [ ] Paste the article. Upload the screenshots from `docs/screenshots/`,
+      because relative image paths won't work there.
+- [ ] Tag **#agents**
+- [ ] Optional: a 15-second screen recording (paste toll text → DON'T CLICK
+      → switch to Hindi → Read it to me) makes the strongest "proof it works".
+- [ ] Publish, then drop the link in the challenge post's comments.
+
+## After the challenge
+
+```bash
+scripts/destroy.sh --profile default    # removes Lambda, API, Amplify app, bucket
+```

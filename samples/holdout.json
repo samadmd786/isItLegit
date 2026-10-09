@@ -1,0 +1,19 @@
+[
+  {"id": "h_fedex_customs", "label": "scam", "expect": "dont_click", "text": "FedEx: Your parcel is being held at customs. A customs fee of $2.99 is required before delivery. Pay here: fedex-customs-clear.com/p/88123"},
+  {"id": "h_bofa_locked", "label": "scam", "expect": "dont_click", "text": "BofA ALERT: Your online banking has been temporarily locked. Unlock now at https://bankofamerica-unlock.net to restore access."},
+  {"id": "h_apple_icloud_storage", "label": "scam", "expect": "dont_click", "text": "Your iCloud storage is full and your photos will be deleted in 24 hours. Upgrade for free now: https://icloud-photos-save.com"},
+  {"id": "h_venmo_mistake", "label": "scam", "expect": "careful", "text": "Hi, I sent you $300 on Venmo by mistake, it was meant for my landlord. Can you please send it back? I'm a single mom and really need it today."},
+  {"id": "h_grandson_bail", "label": "scam", "expect": "dont_click", "text": "Grandma it's me, I got in a car accident and I'm in jail. I need $2,000 for bail. Please don't tell mom and dad, they'll be so upset. My lawyer will call you."},
+  {"id": "h_job_offer", "label": "scam", "expect": "careful", "text": "Hello! We reviewed your resume and would like to offer you a remote job earning $500/day. No experience needed. Reply YES to get started."},
+  {"id": "h_shortened_bank", "label": "scam", "expect": "dont_click", "text": "Chase: unusual sign-in detected on your account. Verify your identity: https://tinyurl.com/chs-verify22"},
+  {"id": "h_ssa_suspended", "label": "scam", "expect": "dont_click", "text": "This is the Social Security Administration. Your social security number has been suspended due to suspicious activity. Press 1 or call 202-555-0187 immediately to avoid legal action."},
+  {"id": "h_amazon_typo", "label": "scam", "expect": "dont_click", "text": "Your Amazon account is on hold. Please update your billing information: https://www.arnazon-account.com/billing"},
+  {"id": "h_wrong_number_romance", "label": "scam", "expect": "careful", "text": "Hi is this David? We met at the golf club last week. Oh sorry, wrong number! You seem nice though, where are you from?"},
+
+  {"id": "h_legit_pharmacy", "label": "legit", "expect": "looks_ok", "text": "CVS Pharmacy: Your prescription is ready for pickup at 1234 N Clark St. Reply STOP to opt out."},
+  {"id": "h_legit_netflix", "label": "legit", "expect": "looks_ok", "text": "Netflix: A new device signed in to your account. If this was you, enjoy! If not, visit netflix.com/account to sign out of all devices."},
+  {"id": "h_legit_school", "label": "legit", "expect": "looks_ok", "text": "Reminder from Lincoln Elementary: picture day is Thursday. Order forms are in the backpack folder."},
+  {"id": "h_legit_ups", "label": "legit", "expect": "looks_ok", "text": "UPS: Your package 1Z999AA10123456784 is out for delivery today. Track: https://www.ups.com/track?tracknum=1Z999AA10123456784"},
+  {"id": "h_legit_friend_link", "label": "legit", "expect": "looks_ok", "text": "lol look at this dog video https://www.youtube.com/watch?v=dQw4w9WgXcQ"},
+  {"id": "h_legit_bank_code", "label": "legit", "expect": "looks_ok", "text": "Wells Fargo: Your one-time code is 482913. Don't share it. We will never call to ask for this code."}
+]

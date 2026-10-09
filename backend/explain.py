@@ -24,7 +24,8 @@ import os
 import re
 from typing import Any
 
-from backend.brands import BRANDS_BY_KEY
+from backend.brands import BRANDS_BY_KEY, OFFICIAL_DOMAINS
+from backend.checks import registrable_domain
 
 logger = logging.getLogger("isthislegit.explain")
 
@@ -93,6 +94,10 @@ RULE_ACTIONS = {
     "ONE_TIME_CODE_REQUEST": "Never share a code that was texted to you, with anyone. Just ignore the message.",
     "ODD_PAYMENT": "Never pay anyone with gift cards, crypto or a wire transfer because a message asked you to. Call the person on a number you already know.",
     "TECH_SUPPORT": "Close the message and don't call the number. Real tech companies never contact you to fix your computer.",
+    "FAKE_FRAUD_ALERT": "Don't reply and don't take their call. Call your bank yourself using the number on the back of your card.",
+    "SENT_BY_MISTAKE": "Don't send anything back. If money really arrived by mistake, your bank or app can reverse it. Let them handle it.",
+    "JOB_TOO_GOOD": "Don't reply. Real jobs don't text you out of nowhere offering easy money.",
+    "WRONG_NUMBER_OPENER": "Don't reply. It's fine to just delete it, even if they seem friendly.",
 }
 
 
@@ -185,6 +190,11 @@ def _defang_text(s: str) -> str:
         tail = re.search(r"[.,;:!?)]+$", url)
         end = tail.group(0) if tail else ""
         url = url[: len(url) - len(end)]
+        host = re.sub(r"^(https?://)?(www\.)?", "", url, flags=re.IGNORECASE).split("/")[0]
+        # The real company's own site stays readable ("go to paypal.com
+        # yourself" is the advice). Anything else is made unclickable.
+        if registrable_domain(host) in OFFICIAL_DOMAINS:
+            return url + end
         return url.replace(".", "[.]").replace("http", "hxxp") + end
 
     return _URLISH.sub(fix, s)

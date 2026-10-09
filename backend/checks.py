@@ -288,6 +288,22 @@ _TEXT_RULES: list[tuple[str, str, str, re.Pattern[str]]] = [
         r"virus(es)?\s+(detected|found)|call\s+(microsoft|apple|windows|geek\s+squad|norton|mcafee)(\s+support)?|"
         r"(norton|mcafee|geek\s+squad)\s+(subscription|renewal|auto-?renew))\b",
         re.IGNORECASE)),
+    ("SENT_BY_MISTAKE", "high", "It says money was sent to you by mistake and asks you to send it back. That's a known trick.", re.compile(
+        r"\b(sent|paid|transferred)\s+(you\s+)?(\$\s?[\d,.]+|money|a\s+payment|it)\s+(\w+\s+){0,4}by\s+(mistake|accident)|"
+        r"accidentally\s+(sent|paid|transferred)|(send|pay|refund|return)\s+(it|the\s+money)\s+back\b",
+        re.IGNORECASE)),
+    ("JOB_TOO_GOOD", "medium", "It offers easy money or a job you never applied for.", re.compile(
+        r"(\$\s?\d[\d,]*\s*(/|per|a|an)\s*(day|hour|hr)\b|\bno\s+experience\s+(needed|required|necessary)\b|"
+        r"\b(earn|make)\s+(up\s+to\s+)?\$\s?\d|\bwork\s+from\s+(home|your\s+phone)\b.{0,40}\b(earn|pay|\$)|"
+        r"\breply\s+(yes|y)\s+to\s+(get\s+started|apply|learn\s+more)\b)",
+        re.IGNORECASE)),
+    ("WRONG_NUMBER_OPENER", "medium", "\"Sorry, wrong number\" followed by friendly chat is how many long-con scams start.", re.compile(
+        r"\b(wrong\s+number|sorry,?\s+(i|we)\s+(think\s+)?(have|got|texted)\s+the\s+wrong)\b.{0,80}\b(nice|friend|where\s+are\s+you|chat|talk|get\s+to\s+know)",
+        re.IGNORECASE | re.DOTALL)),
+    ("FAKE_FRAUD_ALERT", "high", "It pretends to be your bank's fraud team and wants you to reply or take a call. Banks' real alerts never lead to a stranger calling you.", re.compile(
+        r"\b(fraud\s+(dept|department|team|alert|prevention)|did\s+you\s+(attempt|authori[sz]e|make|send)\s+(a\s+)?(\$[\d,.]+\s+)?(zelle|payment|purchase|transfer|transaction))\b"
+        r".{0,160}\b(reply\s+(yes|no|y|n)\b|(agent|representative|specialist|officer)\s+will\s+(call|contact)|we\s+will\s+call\s+you)",
+        re.IGNORECASE | re.DOTALL)),
     ("GENERIC_GREETING", "low", "It does not use your name, just a generic greeting.", re.compile(
         r"\b(dear\s+(customer|user|client|member|account\s+holder|valued\s+customer|sir/madam|sir\s+or\s+madam)|valued\s+customer)\b",
         re.IGNORECASE)),

@@ -10,7 +10,9 @@ from backend.checks import (
     registrable_domain,
 )
 
-CORPUS = json.loads((Path(__file__).parent.parent / "samples" / "corpus.json").read_text())
+SAMPLES = Path(__file__).parent.parent / "samples"
+CORPUS = json.loads((SAMPLES / "corpus.json").read_text())
+HOLDOUT = json.loads((SAMPLES / "holdout.json").read_text()) + json.loads((SAMPLES / "holdout2.json").read_text())
 
 
 @pytest.mark.parametrize("case", CORPUS, ids=[c["id"] for c in CORPUS])
@@ -94,3 +96,20 @@ def test_empty_and_huge_input():
         analyze_text("   ")
     with pytest.raises(InputError):
         analyze_text("a" * 20_001)
+
+
+@pytest.mark.parametrize("case", HOLDOUT, ids=[c["id"] for c in HOLDOUT])
+def test_holdout_safe_side(case):
+    """Held-out sets: never call a scam OK, never tell someone to avoid a real message."""
+    verdict = analyze_text(case["text"])["verdict"]
+    if case["label"] == "scam":
+        assert verdict != "looks_ok"
+    else:
+        assert verdict != "dont_click"
+
+
+def test_link_free_scams():
+    assert "SENT_BY_MISTAKE" in rules("I accidentally sent you $200 on Zelle, can you send it back?")
+    assert "JOB_TOO_GOOD" in rules("Work from home and earn $400 per day, no experience needed!")
+    assert "WRONG_NUMBER_OPENER" in rules("Oops wrong number, sorry! You seem nice though, where are you from?")
+    assert "FAKE_FRAUD_ALERT" in rules("Chase Fraud Alert: did you make a purchase of $899 at Best Buy? Reply YES or NO.")
