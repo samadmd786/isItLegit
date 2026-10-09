@@ -26,7 +26,7 @@ Browser (AWS Amplify)  →  API Gateway (throttled)  →  AWS Lambda
                                                        └─ Layer 2: Amazon Bedrock (Nova Micro) → words
 ```
 
-**Layer 1** is plain Python with no network calls and no dependencies. It pulls every link out of the message, including bare ones like `usps-redeliver.info/track` and defanged ones like `hxxp://evil[.]com`. Then it checks for:
+**Layer 1** is plain Python with no dependencies, and apart from the short-link lookup below, no network calls. It pulls every link out of the message, including bare ones like `usps-redeliver.info/track` and defanged ones like `hxxp://evil[.]com`. Then it checks for:
 
 - **Look-alike domains.** `paypa1`, `rnicrosoft` and `arnazon` are caught by normalizing look-alike characters, then measuring edit distance against a hand-curated list of 30 commonly impersonated brands.
 - **Real brand names on someone else's site.** `amazon.com.order-cancel-help.xyz` is not Amazon.
