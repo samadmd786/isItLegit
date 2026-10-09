@@ -163,6 +163,21 @@ button { font: inherit; cursor: pointer; }
 #headline { font-size: 1.3rem; margin: 18px 0 6px; }
 #why { margin: 0 0 16px; font-size: 1.05rem; }
 
+.expanded {
+  list-style: none;
+  padding: 12px 14px;
+  margin: 0 0 16px;
+  border-radius: 8px;
+  border: 1px dashed var(--line);
+  font-size: 0.85rem;
+}
+.expanded li + li { margin-top: 6px; }
+.expanded code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.8rem;
+  overflow-wrap: anywhere;
+}
+
 .todo {
   padding: 14px 16px;
   border-left: 5px solid var(--accent);

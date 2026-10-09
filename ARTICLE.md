@@ -30,7 +30,8 @@ Browser (AWS Amplify)  →  API Gateway (throttled)  →  AWS Lambda
 
 - **Look-alike domains.** `paypa1`, `rnicrosoft` and `arnazon` are caught by normalizing look-alike characters, then measuring edit distance against a hand-curated list of 30 commonly impersonated brands.
 - **Real brand names on someone else's site.** `amazon.com.order-cancel-help.xyz` is not Amazon.
-- **Disguised and hidden links.** Punycode, raw IP addresses, `@` tricks, link shorteners and throwaway domain endings.
+- **Disguised and hidden links.** Punycode, raw IP addresses, `@` tricks and throwaway domain endings.
+- **Short links, unmasked.** Scam texts love bit.ly because it hides the destination. So for bit.ly, tinyurl, t.co and 19 other shorteners, the agent asks the *shortening company* where the link points. It sends one request, reads the redirect, and stops. It never visits the destination itself. The real address then goes through every other check, and the page tells you plainly: "bit[.]ly/… really goes to …". If the shortener has already flagged the link, that alone is a DON'T CLICK.
 - **Mismatches.** The message says "Netflix" but every link goes elsewhere.
 - **The classic scripts.** Gift cards and crypto, "send me the code", "Hi Mom, new number", fake tech support, "I sent you money by mistake", fake fraud-department texts.
 - **Email headers, if you paste them.** SPF/DKIM/DMARC failures, a sender name that doesn't match the address, a Reply-To that goes somewhere else.
@@ -43,7 +44,7 @@ Three things about that layer matter more than the prompt:
 2. **It can't produce a clickable scam link.** Any domain in the model's output that isn't the real company's is defanged before it reaches the page.
 3. **It fails soft.** If Bedrock is throttled, the same verdict comes back with a rule-written explanation. The app never shows an error to someone who is already anxious.
 
-It never opens the links. Everything is decided from the text, and nothing is stored. The Lambda logs rule ids and timings, never messages.
+It never opens the links. Everything is decided from the text, plus that one question to the link shortener, and nothing is stored. The Lambda logs rule ids and timings, never messages.
 
 **AWS services:** Amazon Bedrock (Nova Micro), AWS Lambda, Amazon API Gateway (HTTP API, rate-limited so a public demo can't run up a bill), AWS Amplify Hosting, AWS CloudFormation, Amazon CloudWatch Logs. One script deploys all of it from the terminal. **Tools:** Python, pytest, vanilla HTML/JS with no build step, and Claude Code as a pair programmer.
 
@@ -60,6 +61,8 @@ So the first thing on screen is the verdict, in his language, in letters you can
 - **The AI stayed in its lane.** 28 out of 28 live answers passed validation, including the prompt-injection attempt.
 - **Accuracy on messages it hadn't seen.** I froze the rules and then wrote 32 new messages, 20 scams and 12 real ones, in two rounds. On first run it flagged **16 of 20 scams** and told nobody to avoid a real message. One store "last chance" sale got a BE CAREFUL. The four misses were all link-free scams: the "I sent you money by mistake" Venmo trick, a fake job offer, a "wrong number" opener, and a fake bank fraud-department text. I added rules for each, and they're now regression tests. But 16/20 is the honest number.
 - **Real people.** [FILL: what happened when you showed it to your mom/dad. One or two sentences, their words if possible.]
+
+![A "Netflix" text whose bit.ly link really goes somewhere else](docs/screenshots/04-short-link-revealed.jpg)
 
 ![Hindi, on a phone](docs/screenshots/03-toll-hindi-mobile.jpg)
 

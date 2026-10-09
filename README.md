@@ -24,6 +24,8 @@ API Gateway HTTP API (throttled: 5 req/s)
    ▼
 AWS Lambda
    ├─ Layer 1  backend/checks.py   deterministic checks → verdict
+   │           short links (bit.ly, tinyurl, t.co…) expanded first: asks
+   │           the shortener where it points, never visits the destination
    │           lookalike domains (paypa1, rnicrosoft, xn--), brand names in
    │           someone else's domain, shorteners, risky TLDs, IP links,
    │           urgency, gift-card/crypto asks, code requests, "Hi Mom new
@@ -43,6 +45,16 @@ Why split it this way:
 - **It never opens a link.** Everything is decided from the text. Domains are
   shown defanged (`evil[.]com`), and the AI's output is defanged too, so
   the explainer can never become the thing someone clicks.
+- **Short links are unmasked without visiting them.** For bit.ly, tinyurl,
+  t.co and 19 other shorteners, `backend/expand.py` sends one HEAD
+  request to the *shortener*, reads the `Location` header, and stops (up to
+  4 hops if it chains through more shorteners). Only shortener hosts are ever
+  contacted, so this can't be steered at the scam site or at internal
+  addresses. The real destination then goes through every link check, and
+  the page shows "bit[.]ly/abc really goes to evil[.]xyz". A shortener's own
+  "this link is flagged" page counts as DON'T CLICK. A dead or unreadable
+  short link keeps its warning. Expansion only makes a verdict safer when the
+  link lands on the real company's own site (e.g. amzn.to → amazon.com).
 - **It degrades instead of failing.** If Bedrock is throttled, the same
   verdict comes back with a rule-written explanation.
 - **Nothing is stored.** The Lambda logs rule ids and timings, never message
@@ -67,7 +79,7 @@ Reproduce:
 
 ```bash
 python3 -m venv .venv && .venv/bin/pip install pytest boto3
-.venv/bin/python -m pytest -q                               # 83 offline tests
+.venv/bin/python -m pytest -q                               # 95 offline tests
 .venv/bin/python scripts/scan.py                            # build corpus
 .venv/bin/python scripts/scan.py --holdout                  # held-out round 1
 .venv/bin/python scripts/scan.py --holdout2                 # held-out round 2

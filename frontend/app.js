@@ -118,6 +118,8 @@
     $("share").textContent = ui().share;
     $("clues-h").textContent = ui().clues;
 
+    renderExpanded(data.expanded || []);
+
     const ul = $("clues");
     ul.replaceChildren();
     if (!data.findings.length) {
@@ -143,6 +145,31 @@
     $("result").hidden = false;
     clear.hidden = false;
     $("result").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  // Short links (bit.ly etc.): show where they really go. Built with
+  // textContent only; every address arrives already defanged.
+  function renderExpanded(items) {
+    const ul = $("expanded");
+    ul.replaceChildren();
+    for (const e of items) {
+      const li = document.createElement("li");
+      const short = document.createElement("code");
+      short.textContent = e.short;
+      if (e.status === "ok") {
+        const dest = document.createElement("code");
+        dest.textContent = e.final;
+        li.append("🔗 Short link ", short, " really goes to ", dest);
+      } else if (e.status === "blocked") {
+        li.append("⛔ Short link ", short, " has been flagged as harmful by the link-shortening company.");
+      } else if (e.status === "dead") {
+        li.append("🔗 Short link ", short, " no longer works.");
+      } else {
+        li.append("🔗 Couldn't check where short link ", short, " goes.");
+      }
+      ul.appendChild(li);
+    }
+    ul.hidden = items.length === 0;
   }
 
   function showError(text) {

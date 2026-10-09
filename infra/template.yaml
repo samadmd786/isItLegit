@@ -44,7 +44,7 @@ Resources:
       Handler: backend.handler.lambda_handler
       Role: !GetAtt LambdaRole.Arn
       MemorySize: 256
-      Timeout: 15
+      Timeout: 20  # worst case: 4 shortener hops x 2.5 s, plus one Bedrock call
       Code:
         S3Bucket: !Ref LambdaS3Bucket
         S3Key: !Ref LambdaS3Key

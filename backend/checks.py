@@ -53,6 +53,8 @@ SHORTENERS = {
     "bit.ly", "tinyurl.com", "t.co", "goo.gl", "ow.ly", "is.gd", "buff.ly",
     "rebrand.ly", "cutt.ly", "shorturl.at", "rb.gy", "t.ly", "tiny.cc", "bl.ink",
     "s.id", "v.gd", "qrco.de", "lnkd.in", "shorturl.gg",
+    # Companies' own shorteners: expanded for display, never held against a message.
+    "amzn.to", "a.co", "g.co",
 }
 
 # TLDs that are cheap, rarely used by real businesses, and over-represented in
@@ -173,18 +175,20 @@ def _lookalike_brand(reg: str) -> str | None:
     if reg in OFFICIAL_DOMAINS:
         return None
     label = reg.split(".")[0]
-    norm = _normalize_label(label)
-    for target, brand in BRAND_TOKENS.items():
-        if len(target) < 5 or label == target:
-            continue
-        nt = _normalize_label(target)
-        if norm == nt:
-            return brand  # paypa1, amaz0n, rnicrosoft
-        # Typo-squats. Only for longer names: "apply" is not a fake "apple".
-        if len(target) >= 6:
-            limit = 1 if len(target) < 9 else 2
-            if _edit_distance(norm, nt, cap=limit) <= limit:
-                return brand  # paypall, amazom, wellsfarqo
+    # Check the whole label and each hyphenated part: "paypa1-secure".
+    for part in dict.fromkeys([label, *label.split("-")]):
+        norm = _normalize_label(part)
+        for target, brand in BRAND_TOKENS.items():
+            if len(target) < 5 or part == target:
+                continue
+            nt = _normalize_label(target)
+            if norm == nt:
+                return brand  # paypa1, amaz0n, rnicrosoft
+            # Typo-squats. Only for longer names: "apply" is not a fake "apple".
+            if len(target) >= 6:
+                limit = 1 if len(target) < 9 else 2
+                if _edit_distance(norm, nt, cap=limit) <= limit:
+                    return brand  # paypall, amazom, wellsfarqo
     return None
 
 
@@ -205,7 +209,8 @@ def _brand_in_domain(host: str, reg: str) -> str | None:
     return None
 
 
-def check_links(links: list[dict[str, str]]) -> list[Finding]:
+def check_links(links: list[dict], expansions: dict | None = None) -> list[Finding]:
+    expansions = expansions or {}
     findings: list[Finding] = []
     for link in links:
         host, url = link["host"], link["url"]
@@ -234,9 +239,8 @@ def check_links(links: list[dict[str, str]]) -> list[Finding]:
                                    f"The link uses the name {BRANDS_BY_KEY[brand].name} but goes to a different website ({_defang(reg)}).",
                                    shown))
 
-        if reg in SHORTENERS or host in SHORTENERS:
-            findings.append(_f("LINK_SHORTENER", "medium",
-                               "The link is shortened, so you cannot see where it really goes.", shown))
+        if (reg in SHORTENERS or host in SHORTENERS) and reg not in OFFICIAL_DOMAINS:
+            findings += _shortener_findings(url, shown, expansions.get(url))
         if tld in RISKY_TLDS and reg not in OFFICIAL_DOMAINS:
             findings.append(_f("RISKY_TLD", "medium",
                                f"The website ends in .{tld}, which real companies rarely use and scammers use a lot.", shown))
@@ -244,6 +248,45 @@ def check_links(links: list[dict[str, str]]) -> list[Finding]:
             findings.append(_f("NO_HTTPS", "low",
                                "The link is not secure (http instead of https).", shown))
     return findings
+
+
+def _shortener_findings(url: str, shown: str, exp: dict | None) -> list[Finding]:
+    """What to say about a short link, given what the shortener told us.
+
+    Expansion only ever makes a verdict *safer* in one case: the short link
+    lands on the real company's own website. Every other outcome keeps (or
+    raises) the warning.
+    """
+    status = exp["status"] if exp else "unchecked"
+    if status == "ok":
+        dest_host = (urlsplit(exp["final"]).hostname or "").lower()
+        if registrable_domain(dest_host) in OFFICIAL_DOMAINS:
+            return []
+        return [_f("LINK_SHORTENER", "medium",
+                   f"The link is shortened to hide where it goes. It really leads to {_defang(dest_host)}.",
+                   f"{shown} -> {_defang(dest_host)}")]
+    if status == "blocked":
+        return [_f("SHORTENER_FLAGGED", "high",
+                   "The link-shortening company itself has flagged this link as harmful.", shown)]
+    if status == "dead":
+        return [_f("LINK_SHORTENER", "medium",
+                   "The link is shortened, and it no longer works. Scam links often get shut down fast.", shown)]
+    return [_f("LINK_SHORTENER", "medium",
+               "The link is shortened, so you cannot see where it really goes.", shown)]
+
+
+def _destination_links(links: list[dict], expansions: dict) -> list[dict]:
+    """Links as they really are: each expanded short link swapped for its destination."""
+    out = []
+    for link in links:
+        exp = expansions.get(link["url"])
+        if exp and exp["status"] == "ok" and exp["final"]:
+            parts = urlsplit(exp["final"])
+            out.append({"url": exp["final"], "host": (parts.hostname or "").lower(), "netloc": parts.netloc,
+                        "scheme": parts.scheme.lower(), "explicit": True, "via": link["host"]})
+        else:
+            out.append(link)
+    return out
 
 
 # --------------------------------------------------------------------------
@@ -333,7 +376,10 @@ def check_text(text: str) -> list[Finding]:
 
 
 def mentioned_brands(text: str) -> list[str]:
-    return [b.key for b in BRANDS if b.mention.search(text)]
+    """Brands the message *claims* to be from. Words inside links don't count:
+    "tinyurl.com/google" is not a message from Google."""
+    prose = _BARE_URL.sub(" ", _WWW_URL.sub(" ", _SCHEME_URL.sub(" ", _undefang(text))))
+    return [b.key for b in BRANDS if b.mention.search(prose)]
 
 
 def check_brand_mismatch(text: str, links: list[dict[str, str]], already: list[Finding]) -> list[Finding]:
@@ -464,13 +510,22 @@ def verdict_for(findings: list[Finding]) -> str:
     return VERDICT_OK
 
 
-def analyze_text(raw: str) -> dict:
-    """Run every check. Returns {verdict, score, findings, links, brands}."""
+def analyze_text(raw: str, expander=None) -> dict:
+    """Run every check. Returns {verdict, score, findings, links, brands, expanded}.
+
+    `expander` (backend.expand.expand_links in production) maps a list of URLs
+    to {short_url: Expansion}. Leave it None to stay fully offline; short
+    links are then flagged as "can't see where it goes".
+    """
     text = clean_input(raw)
     links = extract_links(text)
-    findings = check_links(links)
+    expansions = expander([l["url"] for l in links]) if expander else {}
+    findings = check_links(links, expansions)
+    # Run the link checks again on wherever the short links really go.
+    real = _destination_links(links, expansions)
+    findings += check_links([l for l in real if l.get("via")])
     findings += check_text(text)
-    findings += check_brand_mismatch(text, links, findings)
+    findings += check_brand_mismatch(text, real, findings)
     findings += check_headers(text)
 
     # One finding per (rule, evidence); order by severity so the UI and the
@@ -492,4 +547,10 @@ def analyze_text(raw: str) -> dict:
         "findings": unique,
         "links": [_defang(l["host"]) for l in links],
         "brands": brands,
+        "expanded": [
+            {"short": _defang(urlsplit(e["short"]).netloc + urlsplit(e["short"]).path),
+             "final": _defang(urlsplit(e["final"]).hostname or "") if e["final"] else None,
+             "status": e["status"]}
+            for e in expansions.values()
+        ],
     }

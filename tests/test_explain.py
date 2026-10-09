@@ -24,7 +24,7 @@ def ai(headline, why, do_this):
 
 def test_ai_explanation_used_when_valid():
     fake = FakeBedrock(ai("This is a scam, Mom.", "The link is fake. It rushes you.", "Delete it."))
-    r = check(SCAM, client=fake)
+    r = check(SCAM, client=fake, expander=None)
     assert r["ai"] is True and r["verdict"] == "dont_click"
     assert r["explanation"]["headline"] == "This is a scam, Mom."
 
@@ -37,14 +37,14 @@ def test_falls_back_when_bedrock_fails():
 
 def test_model_cannot_call_a_scam_safe():
     fake = FakeBedrock(ai("This message is safe.", "It looks legit.", "Go ahead and pay."))
-    r = check(SCAM, client=fake)
+    r = check(SCAM, client=fake, expander=None)
     assert r["ai"] is False  # rejected, template used
     assert r["verdict"] == "dont_click"
 
 
 def test_model_links_are_defanged():
     fake = FakeBedrock(ai("Scam.", "It goes to usps-fee.top instead of usps.com.", "Type usps.com yourself."))
-    r = check(SCAM, client=fake)
+    r = check(SCAM, client=fake, expander=None)
     assert "usps-fee.top" not in r["explanation"]["why"]
     assert "usps.com" in r["explanation"]["do_this"]  # the real site stays readable
 

@@ -18,6 +18,7 @@ import time
 from typing import Any
 
 from backend.checks import InputError, analyze_text
+from backend.expand import expand_links
 from backend.explain import LANGUAGES, ExplainError, explain, template_explanation
 
 logger = logging.getLogger("isthislegit")
@@ -31,11 +32,12 @@ HEADERS = {
 }
 
 
-def check(message: str, language: str = "en", client: Any = None, use_ai: bool = True) -> dict[str, Any]:
+def check(message: str, language: str = "en", client: Any = None, use_ai: bool = True,
+          expander: Any = expand_links) -> dict[str, Any]:
     t0 = time.monotonic()
     language = language if language in LANGUAGES else "en"
     try:
-        analysis = analyze_text(message)
+        analysis = analyze_text(message, expander=expander)
     except InputError as exc:
         return {"ok": False, "error": str(exc)}
 
@@ -51,6 +53,7 @@ def check(message: str, language: str = "en", client: Any = None, use_ai: bool =
     logger.info(json.dumps({
         "verdict": analysis["verdict"],
         "rules": [f["rule_id"] for f in analysis["findings"]],
+        "expanded": [e["status"] for e in analysis["expanded"]],
         "ai": ai,
         "language": language,
         "ms": int((time.monotonic() - t0) * 1000),
